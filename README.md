@@ -78,9 +78,7 @@ npm run dev
 Runs on http://localhost:3000, talks to the API on http://localhost:8000
 (configurable via `frontend/.env.local`, `NEXT_PUBLIC_API_URL`).
 
-## Deploying (not done yet — do this yourself when ready)
-
-This has only been run locally so far. To put it online:
+## Deploying 
 
 **Backend** — needs a host that can run a long-lived Python process with
 enough memory/disk for the CLIP model (~600MB) and persistent storage for
@@ -100,20 +98,5 @@ Set `NEXT_PUBLIC_API_URL` in the Vercel project settings to point at wherever
 the backend ends up, and update the backend's CORS `allow_origins`
 (`backend/app/main.py`) to include the deployed frontend URL.
 
-## Resume bullets
 
-- Built an AI-powered fashion discovery platform (Next.js, FastAPI, SQLAlchemy)
-  using CLIP embeddings for content-based image similarity search.
-- Implemented a Pinterest-style collections feature with a many-to-many data
-  model, supporting saving/organizing items across multiple boards.
-- Designed a REST API with async image upload, on-upload embedding
-  computation, and ranked similarity search over stored vectors.
 
-## Roadmap
-
-- ~~Week 2: CLIP embeddings + similarity search~~ — done
-- ~~Week 3: feed grid + upload UI polish~~ — done
-- ~~Week 4: collections, aesthetic redesign, write-up~~ — done
-- Not done: live deployment (see above), auth/multi-user support, swapping
-  brute-force similarity for a real vector index (FAISS/pgvector) if the
-  catalog grows past a few thousand items
