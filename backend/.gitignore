@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 data/app.db
 data/images/
+.DS_Store
