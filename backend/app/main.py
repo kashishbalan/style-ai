@@ -1,3 +1,4 @@
+import os
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -34,9 +35,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="StyleAI API", lifespan=lifespan)
 
+allow_origins = ["http://localhost:3000"]
+if frontend_url := os.environ.get("FRONTEND_URL"):
+    allow_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allow_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
