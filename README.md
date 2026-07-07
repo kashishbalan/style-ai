@@ -198,21 +198,4 @@ To load your own images instead, drop them into
 add items some other way, backfill missing vectors with
 `python scripts/backfill_embeddings.py`.
 
-## Running Checks
 
-There's no automated test suite yet (a good next addition would be pytest
-coverage for the embeddings/similarity module). What exists today:
-
-```bash
-cd frontend
-npx tsc --noEmit   # typecheck
-npm run lint       # eslint
-```
-
-## About
-
-*(GitHub repo description field)*
-
-> Full-stack Pinterest-style outfit discovery app with CLIP embeddings for
-> content-based image similarity search, Pinterest-style collections, and a
-> Next.js + FastAPI stack.
