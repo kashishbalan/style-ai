@@ -4,6 +4,13 @@ A tiny Pinterest-style outfit discovery app. Upload outfit photos, find
 visually similar looks via CLIP embeddings, and save favorites into
 Pinterest-style collections (boards).
 
+**Live demo:** https://frontend-beige-six-40.vercel.app
+**API:** https://kashbalan-style-ai-backend.hf.space
+
+> Note: the backend runs on Hugging Face Spaces' free CPU tier, which has no
+> persistent disk — uploaded images and the database reset whenever the Space
+> restarts or sleeps from inactivity. Fine for a demo, not for real data.
+
 ## Architecture
 
 ```
@@ -16,8 +23,8 @@ Next.js (React, Tailwind)        FastAPI backend
 ```
 
 - **Frontend**: Next.js App Router, client-side data fetching, Tailwind for
-  styling, no auth/SSR complexity — this is a local demo, not a deployed
-  multi-tenant product.
+  styling, no auth/SSR complexity — this is a demo, not a multi-tenant
+  product.
 - **Backend**: FastAPI + SQLAlchemy + SQLite. Every uploaded image is embedded
   with `openai/clip-vit-base-patch32` on upload; "find similar" is brute-force
   cosine similarity over stored embeddings (fine at this scale — hundreds to
@@ -78,25 +85,29 @@ npm run dev
 Runs on http://localhost:3000, talks to the API on http://localhost:8000
 (configurable via `frontend/.env.local`, `NEXT_PUBLIC_API_URL`).
 
-## Deploying 
+## Deployment
 
-**Backend** — needs a host that can run a long-lived Python process with
-enough memory/disk for the CLIP model (~600MB) and persistent storage for
-`data/app.db` + `data/images/` (SQLite + local files won't survive on
-ephemeral/serverless platforms). Reasonable options:
-- **Render** or **Fly.io**: attach a persistent volume for `backend/data`,
-  set the start command to `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-- For anything beyond a demo, swap SQLite for Postgres and image storage for
-  S3/R2 — both are small, contained changes (`database.py` and `main.py`).
+**Backend** is deployed as a Docker Space on Hugging Face Spaces (free CPU
+tier, no card required):
+- `backend/Dockerfile` builds a `python:3.13-slim` image, installs the
+  CPU-only torch wheel, and runs `uvicorn` on port 7860 (HF's expected port).
+- `backend/README.md` carries the required Space metadata frontmatter
+  (`sdk: docker`, `app_port: 7860`).
+- CORS is controlled by a `FRONTEND_URL` env var set in the Space's
+  "Variables and secrets" settings, so it can allow the deployed frontend
+  origin without a code change.
+- Push updates with `git push` to the Space's git remote
+  (`git@hf.co:spaces/kashbalan/style-ai-backend`).
 
-**Frontend** — Vercel is the path of least resistance for Next.js:
+**Frontend** is deployed to Vercel:
 ```bash
 cd frontend
-npx vercel
+vercel --prod
 ```
-Set `NEXT_PUBLIC_API_URL` in the Vercel project settings to point at wherever
-the backend ends up, and update the backend's CORS `allow_origins`
-(`backend/app/main.py`) to include the deployed frontend URL.
+`NEXT_PUBLIC_API_URL` is set in the Vercel project's environment variables to
+the Space's URL above.
 
-
-
+For anything beyond a demo: swap SQLite for Postgres and image storage for
+S3/R2 (both small, contained changes in `database.py` and `main.py`), and move
+the backend to a host with persistent disk (Render/Fly.io) so data survives
+restarts.
